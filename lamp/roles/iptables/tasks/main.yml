@@ -1,0 +1,6 @@
+                                                                                 
+- name: insert iptables rule for dest_port
+  lineinfile: dest=/etc/sysconfig/iptables create=yes state=present regexp="{{ dest_port }}" 
+              insertafter="^:OUTPUT "
+              line="-A INPUT -p tcp  --dport {{ dest_port }} -j  ACCEPT"        
+  notify: restart iptables

@@ -1,0 +1,6 @@
+---
+
+- name: Install python utilities
+  yum: name={{ item }} state=present
+  with_items:
+   - python-requests

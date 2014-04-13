@@ -1,0 +1,7 @@
+---
+
+dependencies:
+  - {role: apache}
+  - {role: mysql-client}
+  - {role: php}
+  - {role: testing}

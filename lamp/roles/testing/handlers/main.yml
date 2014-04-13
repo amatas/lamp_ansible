@@ -1,0 +1,4 @@
+---
+
+- name: run tests
+  command: chdir=/tmp python test.py
