@@ -1,19 +1,30 @@
 ---
 # This playbook deploys the whole application stack in this site.  
 
-- name: apply common configuration to all nodes
+- name: Apply common configuration to all nodes
   hosts: all
   user: root
 
   roles:
     - role: ntp
 
-- name: deploy MySQL and configure the databases
+- name: Deploy MySQL with root password with mediawiki user, password and database
   hosts: dbservers
   user: root
 
   roles:
-    - { role: mysql-server, dbname: mwiki, dbuser: mwiki_user, upassword: mwiki_t3.A!} 
+      - { role: mysql-server, 
+          mysql_bind_address: "0.0.0.0",
+          mysql_root_db_pass: mwiki_t3.A!,
+          mysql_db: [{name: mwiki}], 
+          mysql_users: [{
+              name: mwiki_user, 
+              pass: mwiki_t3.A!, 
+              host: 192.168.50.11, 
+              priv: "mwiki.*:ALL"
+          }],
+          mysql_repl_role: none
+      } 
 
 - name: configure and deploy the webservers and application code
   hosts: webservers
