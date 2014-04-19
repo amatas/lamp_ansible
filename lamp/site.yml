@@ -29,4 +29,10 @@
 
   roles:
     - role: mediawiki
-
+    - { role: apache,
+        apache_vhosts: [{
+          servername: "mediawiki.dev",
+          documentroot: "/var/www/html"
+        }],
+        apache_listen_ports: [ 80, ]
+    }
