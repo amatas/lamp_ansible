@@ -15,10 +15,6 @@
   command: chdir=/var/www /bin/ln -sf /var/www/html/mediawiki-1.22.5 /var/www/html/wiki 
            creates=/var/www/html/wiki
 
-- name: Install Mediawiki apache setup
-  template: src=httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf
-  notify: restart httpd
-
 - name: Configure Mediawiki
   command: chdir=/var/www/html/wiki
            /usr/bin/php maintenance/install.php --dbserver 192.168.50.12 --dbname mwiki --dbuser mwiki_user --dbpass mwiki_t3.A! --dbtype mysql --pass wikipass --scriptpath /wiki wikitest wikiadmin 
