@@ -3,14 +3,12 @@
 
 - name: Apply common configuration to all nodes
   hosts: all
-  user: root
 
   roles:
     - role: ntp
 
 - name: Deploy MySQL with root password with mediawiki user, password and database
   hosts: dbservers
-  user: root
 
   roles:
       - { role: mysql-server, 
@@ -28,7 +26,6 @@
 
 - name: configure and deploy the webservers and application code
   hosts: webservers
-  user: root
 
   roles:
     - role: mediawiki
