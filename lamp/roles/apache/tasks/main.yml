@@ -1,2 +1,8 @@
 ---
-- include: install_httpd.yml
+# Install Apache web server in specific OS
+- include: install_apache_RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: install_apache_Debian.yml
+  when: ansible_os_family == 'Debian'
+ 

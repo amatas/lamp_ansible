@@ -1,0 +1,26 @@
+---
+
+- name: Install Apache web server for RedHat derivatives
+  yum: name={{ item }} state=present
+  with_items:
+   - httpd
+  tags:
+   - yum
+
+- name: Start and enable Apache web server for RedHat derivatives
+  service: name=httpd state=started enabled=yes
+
+- name: Copy httpd.conf file
+  copy: src=httpd.conf dest=/etc/httpd/conf/httpd.conf owner=root group=root mode=0644 backup=yes
+  notify:
+   - restart httpd
+  tags:
+   - configure
+
+- name: Set up virtual hosts
+  template: src=vhosts.conf.j2 dest=/etc/httpd/conf.d/vhosts.conf
+  notify:
+   - restart httpd
+  tags:
+   - configure
+ 
