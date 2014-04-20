@@ -5,17 +5,22 @@
   with_items:
    - httpd
   tags:
-   - yum
+   - install
+   - apache
 
 - name: Start and enable Apache web server for RedHat derivatives
   service: name=httpd state=started enabled=yes
-
+  tags:
+   - install
+   - apache
+ 
 - name: Copy httpd.conf file
   copy: src=httpd.conf dest=/etc/httpd/conf/httpd.conf owner=root group=root mode=0644 backup=yes
   notify:
    - restart httpd
   tags:
    - configure
+   - apache
 
 - name: Set up virtual hosts
   template: src=vhosts.conf.j2 dest=/etc/httpd/conf.d/vhosts.conf
@@ -23,4 +28,5 @@
    - restart httpd
   tags:
    - configure
+   - apache
  
