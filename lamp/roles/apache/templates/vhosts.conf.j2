@@ -1,13 +1,13 @@
 
 # Listen ports and VirtualHosts.
 
-{% for port in apache_listen_ports %}
+{% for port in apache_listen_ports | unique %}
 Listen {{ port }}
 {% endfor %}
 
 DirectoryIndex index.php index.html
 
-{% for port in apache_listen_ports %}
+{% for port in apache_listen_ports | unique %}
 {% for vhost in apache_vhosts %}
 <VirtualHost *:{{ port }}>
   ServerName {{ vhost.servername }}
