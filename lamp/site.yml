@@ -28,11 +28,17 @@
   hosts: webservers
 
   roles:
-    - role: mediawiki
+    - { role: mediawiki,
+        mediawiki_db_pass: mwiki_t3.A!,
+        mediawiki_db_name: mwiki,
+        mediawiki_db_user: mwiki_user,
+        mediawiki_db_host: 192.168.50.12
+    }
     - { role: apache,
         apache_vhosts: [{
           servername: "mediawiki.dev",
-          documentroot: "/var/www/html"
+          documentroot: "/var/www/html",
+          extra_parameters: "RewriteEngine On\n  RewriteRule ^/*$ %{DOCUMENT_ROOT}/wiki/index.php [L]"
         }],
         apache_listen_ports: [ 80, ]
     }

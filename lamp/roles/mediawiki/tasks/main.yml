@@ -1,26 +1,45 @@
 ---
 
-- name: Download Mediawiki
-  get_url: url=http://releases.wikimedia.org/mediawiki/1.22/mediawiki-1.22.5.tar.gz 
+- name: Download tarball
+  get_url: url={{ mediawiki_downloadurl }}
            dest=/tmp/mediawiki.tar.gz
-           sha256sum="3acae43cb7859f5403c022f285d2281c41cf78a8b914777da5a049f8934cf722"
+           sha256sum={{ mediawiki_sha256sum }}
+  tags:
+    - install
+    - mediawiki
 
-- name: Extract archive
-  command: chdir=/var/www/html /bin/tar xvf /tmp/mediawiki.tar.gz creates=/var/www/html/mediawiki-1.22.5
+- name: Extract tarball
+  command: chdir=/tmp /bin/tar xf /tmp/mediawiki.tar.gz 
+           creates=/tmp/mediawiki-{{ mediawiki_version }}
+  tags:
+    - install
+    - mediawiki
 
+- name: Move extracted files to final location
+  command: chdir=/tmp mv /tmp/mediawiki-{{ mediawiki_version }} {{ mediawiki_installpath }} 
+           creates={{ mediawiki_installpath }}
+  tags:
+    - install
+    - mediawiki
+ 
 - name: Change ownership of Mediawiki installation
-  file: path=/var/www/html/mediawiki-1.22.5/ owner=apache group=apache state=directory recurse=yes
-
-- name: Set up symlink to mediawiki
-  command: chdir=/var/www /bin/ln -sf /var/www/html/mediawiki-1.22.5 /var/www/html/wiki 
-           creates=/var/www/html/wiki
+  file: path={{ mediawiki_installpath }} owner=apache group=apache state=directory recurse=yes
+  tags:
+    - install
+    - mediawiki
 
 - name: Configure Mediawiki
-  command: chdir=/var/www/html/wiki
-           /usr/bin/php maintenance/install.php --dbserver 192.168.50.12 --dbname mwiki --dbuser mwiki_user --dbpass mwiki_t3.A! --dbtype mysql --pass wikipass --scriptpath /wiki wikitest wikiadmin 
-           creates=/var/www/html/wiki/LocalSettings.php
+  command: chdir={{ mediawiki_installpath }} 
+           /usr/bin/php maintenance/install.php --dbserver {{ mediawiki_db_host }} --dbname {{ mediawiki_db_name }} --dbuser {{ mediawiki_db_user }} --dbpass {{ mediawiki_db_pass }} --dbtype {{ mediawiki_db_type }} --pass {{ mediawiki_adm_pass }} --scriptpath {{ mediawiki_scriptpath }} {{ mediawiki_name }} {{ mediawiki_adm_user }}
+           creates={{ mediawiki_installpath }}/LocalSettings.php
+  tags:
+    - configure
+    - mediawiki
 
 - name: Test installation
   copy: src=test.py dest=/tmp/test.py
   notify: run tests
+  tags:
+    - configure
+    - mediawiki
 
