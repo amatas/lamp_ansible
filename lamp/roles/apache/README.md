@@ -15,4 +15,4 @@ Variables
 * apache_listen_ports: list of ports where Apache will listen
 * apache_vhosts: list of dictionaries here virtual hosts are defined.
 
-For more info see vars/main.yml
+For more info see defaults/main.yml
