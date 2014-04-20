@@ -1,3 +1,7 @@
+---
+# These are the variables used by apache role
+#
+
 apache_listen_ports:
   - 80
 
