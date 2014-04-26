@@ -1,0 +1,5 @@
+[webservers]
+webserver1.mydomain.org
+
+[dbservers]
+dbserver1.mydomain.org

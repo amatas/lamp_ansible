@@ -32,14 +32,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible_ssh_user: 'vagrant',
       } 
             
-      ansible.playbook = "lamp/site.yml"
+      ansible.playbook = "lamp/mediawiki.yml"
       ansible.groups = {
         "webservers" => ["lampserver"],
         "dbservers" => ["dbserver"],
         "all_groups:children" => ["webservers", "dbservers"]
       }
       ansible.limit = 'all'
+      ansible.raw_arguments  = "--ask-vault-pass"
 #     Debug option
+#      ansible.raw_arguments  = "--vault-password-file=secret_file_plain_pass"
 #      ansible.verbose = 'vvvv'
     end
   end

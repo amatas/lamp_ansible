@@ -1,0 +1,45 @@
+---
+# This playbook deploys the whole application stack in this site.  
+
+- name: Apply common configuration to all nodes
+  hosts: all
+  roles:
+    - role: ntp
+
+- name: Deploy MySQL with root password with mediawiki user, password and database
+  hosts: dbservers
+  vars_files: 
+      - mediawiki_vault.yml
+  roles:
+      - { role: mysql-server, 
+          mysql_bind_address: "0.0.0.0",
+          mysql_root_db_pass: "{{ mediawiki_vault_dbpass }}",
+          mysql_db: [{name: mwiki}], 
+          mysql_users: [{
+              name: mwiki_user, 
+              pass: mwiki_t3.A!, 
+              host: 192.168.50.11, 
+              priv: "mwiki.*:ALL"
+          }],
+          mysql_repl_role: none
+      } 
+
+- name: configure and deploy the webservers and application code
+  hosts: webservers
+  vars_files:
+      - mediawiki_vault.yml
+  roles:
+    - { role: mediawiki,
+        mediawiki_db_pass: "{{ mediawiki_vault_dbpass }}",
+        mediawiki_db_name: mwiki,
+        mediawiki_db_user: mwiki_user,
+        mediawiki_db_host: 192.168.50.12
+    }
+    - { role: apache,
+        apache_vhosts: [{
+          servername: "mediawiki.dev",
+          documentroot: "/var/www/html",
+          extra_parameters: "RewriteEngine On\n  RewriteRule ^/*$ %{DOCUMENT_ROOT}/wiki/index.php [L]"
+        }],
+        apache_listen_ports: [ 80, ]
+    }

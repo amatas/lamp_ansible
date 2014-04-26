@@ -1,0 +1,5 @@
+[webservers]
+webserver1.mytest-domain.lcl
+
+[dbservers]
+dbserver1.mytest-domain.lcl
