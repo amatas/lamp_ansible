@@ -22,3 +22,8 @@ mediawiki_scriptpath: /wiki
 mediawiki_adm_user: wikiadmin
 mediawiki_adm_pass: wikipass
 mediawiki_name: mediawiki
+
+mediawiki_paths_permissions: [
+  { path: images, owner: apache, group: apache, mode: 700, recurse: false },
+  { path: maintenance, owner: root, group: root, mode: 700, recurse: true }
+] 

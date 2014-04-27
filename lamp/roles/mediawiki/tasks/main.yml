@@ -21,17 +21,26 @@
   tags:
     - install
     - mediawiki
- 
-- name: Change ownership of Mediawiki installation
-  file: path={{ mediawiki_installpath }} owner=apache group=apache state=directory recurse=yes
-  tags:
-    - install
-    - mediawiki
 
 - name: Configure Mediawiki
   command: chdir={{ mediawiki_installpath }} 
            /usr/bin/php maintenance/install.php --dbserver {{ mediawiki_db_host }} --dbname {{ mediawiki_db_name }} --dbuser {{ mediawiki_db_user }} --dbpass {{ mediawiki_db_pass }} --dbtype {{ mediawiki_db_type }} --pass {{ mediawiki_adm_pass }} --scriptpath {{ mediawiki_scriptpath }} {{ mediawiki_name }} {{ mediawiki_adm_user }}
            creates={{ mediawiki_installpath }}/LocalSettings.php
+  tags:
+    - configure
+    - mediawiki
+
+- name: Change ownership of Mediawiki installation
+  file: path={{ mediawiki_installpath }} owner=apache group=apache state=directory recurse=yes
+  tags:
+    - install
+    - mediawiki
+ 
+- name: Set custom file/dir permissions
+  file: path={{ mediawiki_installpath }}/{{item.path}} owner={{item.owner}} 
+        group={{item.group}} mode={{item.mode}} recurse={{item.recurse}}
+  with_items: mediawiki_paths_permissions
+  when: mediawiki_paths_permissions is defined
   tags:
     - configure
     - mediawiki
