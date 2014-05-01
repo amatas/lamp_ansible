@@ -24,6 +24,7 @@
 
 - name: Set up virtual hosts
   template: src=vhosts.conf.j2 dest=/etc/httpd/conf.d/vhosts.conf
+      owner=root group=root mode=0644
   notify:
    - restart httpd
   tags:
