@@ -1,0 +1,16 @@
+---
+php_conf_dir: /etc
+
+php_packages:
+    - php
+    - php-mysql
+    - php-gd
+    - php-xml
+
+php_parameters:
+    expose_php: 'Off'
+    display_errors: 'Off'
+    upload_max_filesize: '1M'
+    post_max_size: '1M'
+
+

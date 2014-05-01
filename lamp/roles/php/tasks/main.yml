@@ -2,9 +2,21 @@
 
 - name: Install php interpreter
   yum: name={{ item }} state=present
-  with_items:
-   - php
-   - php-mysql
-   - php-gd
-   - php-xml
+  with_items: php_packages
+  tags:
+    - install
+    - php
 
+- name: Put default php.ini
+  template: src=php.ini.j2 dest={{ php_conf_dir }}/php.ini mode=0644
+      validate="grep ANSIBLE_MANAGED %s"
+  tags:
+    - install
+    - php
+
+- name: Setting variables in config file php.ini
+  lineinfile: dest=/etc/php.ini state=present regexp="^ *;? *({{ item.key }} *=) *(.*)" line="\\1 {{item.value}}" backrefs=yes
+  with_dict: php_parameters
+  tags:
+    - configure
+    - php 
