@@ -5,6 +5,7 @@
   hosts: all
   roles:
     - role: ntp
+    - role: iptables
 
 - name: Deploy MySQL with root password with mediawiki user, password and database
   hosts: dbservers
@@ -22,24 +23,61 @@
               priv: "mwiki.*:ALL"
           }],
           mysql_repl_role: none
-      } 
+      }
+      - { role: iptables,
+          iptables_default_policy: DROP,
+          iptables_public_interface: eth1,
+          iptables_accepted_intefaces: [
+              lo,
+              eth0
+          ],
+          iptables_syn_protection: true,
+          iptables_accept_icmp: true,
+          iptables_input_ports: [
+              {n: 22, p: tcp, a: ACCEPT},  # allow ssh input connections                    
+              {n: 3306, p: tcp, a: ACCEPT}
+          ],
+          iptables_output_ports: [                                                          
+              {n: 123, p: udp, a: ACCEPT}, # allow ntp requests                             
+              {n: 53, p: udp, a: ACCEPT}
+          ]
+      }
 
 - name: configure and deploy the webservers and application code
   hosts: webservers
   vars_files:
       - mediawiki_vault.yml
   roles:
-    - { role: mediawiki,
-        mediawiki_db_pass: "{{ mediawiki_vault_dbpass }}",
-        mediawiki_db_name: mwiki,
-        mediawiki_db_user: mwiki_user,
-        mediawiki_db_host: 192.168.50.12
-    }
-    - { role: apache,
-        apache_vhosts: [{
-          servername: "mediawiki.dev",
-          documentroot: "/var/www/html",
-          extra_parameters: "RewriteEngine On\n  RewriteRule ^/*$ %{DOCUMENT_ROOT}/wiki/index.php [L]"
-        }],
-        apache_listen_ports: [ 80, ]
-    }
+      - { role: mediawiki,
+          mediawiki_db_pass: "{{ mediawiki_vault_dbpass }}",
+          mediawiki_db_name: mwiki,
+          mediawiki_db_user: mwiki_user,
+          mediawiki_db_host: 192.168.50.12
+      }
+      - { role: apache,
+          apache_vhosts: [{
+            servername: "mediawiki.dev",
+            documentroot: "/var/www/html",
+            extra_parameters: "RewriteEngine On\n  RewriteRule ^/*$ %{DOCUMENT_ROOT}/wiki/index.php [L]"
+          }],
+          apache_listen_ports: [ 80, ]
+      }
+      - { role: iptables,
+          iptables_default_policy: DROP,
+          iptables_public_interface: eth1,
+          iptables_accepted_intefaces: [
+              lo,
+              eth0
+          ],
+          iptables_syn_protection: true,
+          iptables_accept_icmp: true,
+          iptables_input_ports: [
+              {n: 22, p: tcp, a: ACCEPT},  # allow ssh input connections                    
+              {n: 80, p: tcp, a: ACCEPT}
+          ],
+          iptables_output_ports: [                                                          
+              {n: 123, p: udp, a: ACCEPT}, # allow ntp requests                             
+              {n: 53, p: udp, a: ACCEPT},
+              {n: 3306, p: tcp, a: ACCEPT}
+          ]
+      } 
