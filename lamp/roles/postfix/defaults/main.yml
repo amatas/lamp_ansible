@@ -1,0 +1,10 @@
+---
+
+postfix_packages:
+  - postfix
+  - ca-certificates
+
+postfix_relay: true
+postfix_relay_server_host: smtp.gmail.com
+postfix_relay_server_user: user
+postfix_relay_server_password: password
