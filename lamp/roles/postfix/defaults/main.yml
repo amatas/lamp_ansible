@@ -3,6 +3,7 @@
 postfix_packages:
   - postfix
   - ca-certificates
+  - cyrus-sasl-plain
 
 postfix_relay: true
 postfix_relay_server_host: smtp.gmail.com
