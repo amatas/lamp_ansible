@@ -8,7 +8,7 @@
     - postfix
 
 - name: Copy Postfix main.cf config file
-  template: src=main.cf.j2 dest=/etc/postfix/main.cf owner=root group=root mode=0744 backup=yes
+  template: src=main.cf.j2 dest=/etc/postfix/main.cf owner=root group=root mode=0644 backup=yes
   notify:
    - restart postfix
   tags:
@@ -16,9 +16,10 @@
    - postfix
 
 - name: Copy Postfix smtp_relay_credentials config file
-  lineinfile: dest=/etc/postfix/smtp_relay_credentials line="[{{ postfix_relay_server_host }}]:587  {{ postfix_relay_server_user }}:{{ postfix_relay_server_password }}" state=present create=true owner=root group=root mode=0700
+  template: src=smtp_relay_credentials.j2 dest=/etc/postfix/smtp_relay_credentials owner=root group=root mode=0600
   when: postfix_relay
   notify:
+   - update smtp_relay_credentials
    - restart postfix
   tags:
    - configure
