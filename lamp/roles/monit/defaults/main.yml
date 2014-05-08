@@ -1,0 +1,4 @@
+---
+
+monit_packages:
+  - monit

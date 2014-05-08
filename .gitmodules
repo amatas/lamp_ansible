@@ -1,6 +1,3 @@
 [submodule "lamp/roles/mysql-server"]
 	path = lamp/roles/mysql-server
 	url = https://github.com/bennojoy/mysql.git
-[submodule "lamp/roles/monit"]
-	path = lamp/roles/monit
-	url = https://github.com/pgolm/ansible-playbook-monit.git
